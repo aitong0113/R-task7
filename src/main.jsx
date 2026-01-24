@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import { createHashRouter, RouterProvider } from 'react-router'
 import routes from './routes/index.jsx'
 import 'bootstrap/dist/css/bootstrap.min.css'
+import './index.css'
 
 const router = createHashRouter(routes)
 

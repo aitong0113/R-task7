@@ -1,0 +1,10 @@
+/* 全站樣式入口（Global styles entry） 主要樣式來自 Bootstrap*/
+
+
+body {
+  background-color: #fff;
+}
+
+header {
+  margin-bottom: 24px;
+}
