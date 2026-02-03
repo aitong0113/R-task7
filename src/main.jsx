@@ -6,7 +6,10 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import './index.css'
 
 // 使用 BrowserRouter，並配合 Vite base 設定專案根徑
-const router = createBrowserRouter(routes, { basename: '/R-task5' })
+const router = createBrowserRouter(routes, {
+  basename: '/R-task6', 
+});
+
 
 createRoot(document.getElementById('root')).render(
   <RouterProvider router={router} />,

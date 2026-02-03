@@ -1,50 +1,9 @@
-//  路由表
-import Layout from '../Layout';
-import Home from '../pages/Home';
-import Products from '../pages/Products';
-import ProductDetail from '../pages/ProductDetail';
-import Cart from '../pages/Cart';
-import Checkout from '../pages/Checkout';
-import NotFound from '../pages/NotFound';
-import OrderSuccess from '../pages/OrderSuccess';
+import frontRoutes from './frontRoutes';
+import adminRoutes from './adminRoutes';
 
 const routes = [
-  {
-    path: '/',
-    element: <Layout />,
-    // 當路由或 loader 出錯時，使用自訂錯誤頁取代預設訊息
-    errorElement: <NotFound />,
-    children: [
-      { 
-        index: true, 
-        element: <Home /> 
-      },
-      { 
-        path: '/products', 
-        element: <Products /> 
-      },
-      { 
-        path: '/products/:id', 
-        element: <ProductDetail /> 
-      },
-      { 
-        path: '/cart', 
-        element: <Cart /> 
-      },
-      { 
-        path: '/checkout', 
-        element: <Checkout /> 
-      },
-      { 
-        path: '/order-success/:id', 
-        element: <OrderSuccess /> 
-      },
-      { 
-        path: '*', 
-        element: <NotFound /> 
-      },
-    ],
-  },
+  ...adminRoutes,
+  ...frontRoutes,
 ];
 
 export default routes;
