@@ -17,31 +17,29 @@ export default function Checkout() {
 const onSubmit = (form) => {
   setIsLoading(true);
 
-  setTimeout(() => {
-    submitOrder({
-      user: {
-        name: form.name,
-        email: form.email,
-        tel: form.tel,
-        address: form.address,
-      },
-      message: form.message,
-    })
-      .then((data) => {
-        if (data?.success) {
-          const orderId =
-            data.orderId || data.order?.id || data.data?.orderId;
-          navigate(`/order-success/${orderId}`);
-        } else {
-          alert('訂單建立失敗');
-        }
-      })
-      .catch(() => {
-        alert('送出訂單時發生錯誤');
-      })
-      .finally(() => {
-        setIsLoading(false);
+  setTimeout(async () => {
+    try {
+      const data = await submitOrder({
+        user: {
+          name: form.name,
+          email: form.email,
+          tel: form.tel,
+          address: form.address,
+        },
+        message: form.message,
       });
+
+      if (data?.success) {
+        const orderId = data.orderId || data.order?.id || data.data?.orderId;
+        navigate(`/order-success/${orderId}`);
+      } else {
+        alert('訂單建立失敗');
+      }
+    } catch (err) {
+      alert(err?.response?.data?.message || '送出訂單時發生錯誤');
+    } finally {
+      setIsLoading(false);
+    }
   }, 1500); // 👈 故意延遲 1.5 秒
 };
 
@@ -71,8 +69,11 @@ const onSubmit = (form) => {
       <form onSubmit={handleSubmit(onSubmit)}>
         {/* 姓名 */}
         <div className="mb-3">
-          <label className="form-label">姓名</label>
+          <label className="form-label" htmlFor="orderName">姓名</label>
           <input
+            id="orderName"
+            type="text"
+            autoComplete="name"
             className="form-control"
             {...register('name', { required: '請輸入姓名' })}
           />
@@ -83,8 +84,11 @@ const onSubmit = (form) => {
 
         {/* Email */}
         <div className="mb-3">
-          <label className="form-label">Email</label>
+          <label className="form-label" htmlFor="orderEmail">Email</label>
           <input
+            id="orderEmail"
+            type="email"
+            autoComplete="email"
             className="form-control"
             {...register('email', {
               required: '請輸入 Email',
@@ -101,12 +105,17 @@ const onSubmit = (form) => {
 
         {/* 電話 */}
         <div className="mb-3">
-          <label className="form-label">電話</label>
+          <label className="form-label" htmlFor="orderTel">電話</label>
           <input
+            id="orderTel"
+            type="tel"
+            inputMode="numeric"
+            autoComplete="tel"
             className="form-control"
             {...register('tel', {
               required: '請輸入電話',
               minLength: { value: 10, message: '電話至少 10 碼' },
+              pattern: { value: /^[0-9]+$/, message: '電話僅能輸入數字' },
             })}
           />
           {errors.tel && (
@@ -116,8 +125,11 @@ const onSubmit = (form) => {
 
         {/* 地址 */}
         <div className="mb-3">
-          <label className="form-label">地址</label>
+          <label className="form-label" htmlFor="orderAddress">地址</label>
           <input
+            id="orderAddress"
+            type="text"
+            autoComplete="address-line1"
             className="form-control"
             {...register('address', { required: '請輸入地址' })}
           />
@@ -128,8 +140,9 @@ const onSubmit = (form) => {
 
         {/* 備註 */}
         <div className="mb-4">
-          <label className="form-label">備註</label>
+          <label className="form-label" htmlFor="orderMessage">備註</label>
           <textarea
+            id="orderMessage"
             className="form-control"
             rows="3"
             {...register('message')}

@@ -11,7 +11,6 @@ export default function Login() {
 
   const onSubmit = async (data) => {
     try {
-      console.log('送出登入資料 👉', data);
 
       const res = await axios.post(`${API_BASE}/admin/signin`, {
         username: data.email,      // ✅ 關鍵：一定是 username
@@ -27,8 +26,6 @@ export default function Login() {
 
       setAuthCookie(token, expireDate);
 
-      console.log('✅ token 已寫入 cookie');
-
       navigate('/admin/products');
     } catch (err) {
       console.error('❌ 登入錯誤完整資訊', err.response);
@@ -42,18 +39,22 @@ export default function Login() {
         <h1 className="login-title">後台登入</h1>
 
         <div className="form-group">
-          <label>Email</label>
+          <label htmlFor="loginEmail">Email</label>
           <input
+            id="loginEmail"
             type="email"
+            autoComplete="email"
             placeholder="請輸入管理員信箱"
             {...register('email', { required: true })}
           />
         </div>
 
         <div className="form-group">
-          <label>Password</label>
+          <label htmlFor="loginPassword">Password</label>
           <input
+            id="loginPassword"
             type="password"
+            autoComplete="current-password"
             placeholder="請輸入密碼"
             {...register('password', { required: true })}
           />

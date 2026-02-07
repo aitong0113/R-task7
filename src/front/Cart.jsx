@@ -9,43 +9,62 @@
     const navigate = useNavigate();
     const [cart, setCart] = useState({ carts: [] });
     const [isClearing, setIsClearing] = useState(false);
+    const [itemLoading, setItemLoading] = useState({}); // 每個 cart item 的 loading 狀態
 
-    const getCart = () => {
-      apiGetCart().then(data => {
+    const getCart = async () => {
+      try {
+        const data = await apiGetCart();
         setCart(data.data);
-      });
+      } catch (err) {
+        alert(err?.response?.data?.message || '取得購物車失敗');
+      }
     };
 
     useEffect(() => {
       getCart();
     }, []);
 
-    const updateQty = (cartItem, qty) => {
-      updateCartItem(cartItem.id, cartItem.product.id, qty)
-        .then(() => getCart());
+    const updateQty = async (cartItem, qty) => {
+      try {
+        setItemLoading((prev) => ({ ...prev, [cartItem.id]: true }));
+        await updateCartItem(cartItem.id, cartItem.product.id, qty);
+        await getCart();
+      } catch (err) {
+        alert(err?.response?.data?.message || '更新數量失敗');
+      } finally {
+        setItemLoading((prev) => ({ ...prev, [cartItem.id]: false }));
+      }
     };
 
-    const removeItem = (cartId) => {
-      removeCartItem(cartId).then(() => getCart());
+    const removeItem = async (cartId) => {
+      try {
+        setItemLoading((prev) => ({ ...prev, [cartId]: true }));
+        await removeCartItem(cartId);
+        await getCart();
+      } catch (err) {
+        alert(err?.response?.data?.message || '移除商品失敗');
+      } finally {
+        setItemLoading((prev) => ({ ...prev, [cartId]: false }));
+      }
     };
 
-    const handleClearCart = () => {
+    const handleClearCart = async () => {
       if (cart.carts.length === 0) return;
       const ok = window.confirm('確定要清空購物車嗎？此操作無法復原');
       if (!ok) return;
       setIsClearing(true);
-      clearCart()
-        .then((data) => {
-          if (data?.success) {
-            getCart();
-          } else {
-            alert(data?.message || '清空購物車失敗');
-          }
-        })
-        .catch((err) => {
-          alert(err?.response?.data?.message || '清空購物車時發生錯誤');
-        })
-        .finally(() => setIsClearing(false));
+      try {
+        const data = await clearCart();
+        if (data?.success) {
+          getCart();
+        } else {
+          alert(data?.message || '清空購物車失敗');
+        }
+      } catch (err) {
+        alert(err?.response?.data?.message || '清空購物車時發生錯誤');
+      } finally {
+        setIsClearing(false);
+      }
     };
 
     return (
@@ -92,7 +111,7 @@
                         <button
                           className="btn btn-sm btn-outline-secondary"
                           onClick={() => updateQty(item, item.qty - 1)}
-                          disabled={item.qty === 1}
+                          disabled={item.qty === 1 || !!itemLoading[item.id] || isClearing}
                         >
                           −
                         </button>
@@ -104,6 +123,7 @@
                         <button
                           className="btn btn-sm btn-outline-secondary"
                           onClick={() => updateQty(item, item.qty + 1)}
+                          disabled={!!itemLoading[item.id] || isClearing}
                         >
                           +
                         </button>
@@ -116,8 +136,9 @@
                       <button
                         className="btn btn-sm btn-outline-danger"
                         onClick={() => removeItem(item.id)}
+                        disabled={!!itemLoading[item.id] || isClearing}
                       >
-                        刪除
+                        {itemLoading[item.id] ? '刪除中…' : '刪除'}
                       </button>
                     </td>
                   </tr>

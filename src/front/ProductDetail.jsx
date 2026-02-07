@@ -5,11 +5,18 @@ import { getProduct, addToCart } from '../services/api';
 export default function ProductDetail() {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
+  const [isAdding, setIsAdding] = useState(false);
 
   useEffect(() => {
-    getProduct(id).then(data => {
-      setProduct(data.product);
-    });
+    const load = async () => {
+      try {
+        const data = await getProduct(id);
+        setProduct(data.product);
+      } catch (err) {
+        alert(err?.response?.data?.message || '取得商品失敗');
+      }
+    };
+    load();
   }, [id]);
 
   if (!product) {
@@ -80,9 +87,20 @@ export default function ProductDetail() {
 
             <button
               className="btn btn-primary btn-lg w-100"
-              onClick={() => addToCart(product.id, 1).then(() => alert('已加入購物車'))}
+              onClick={async () => {
+                try {
+                  setIsAdding(true);
+                  await addToCart(product.id, 1);
+                  alert('已加入購物車');
+                } catch (err) {
+                  alert(err?.response?.data?.message || '加入購物車失敗');
+                } finally {
+                  setIsAdding(false);
+                }
+              }}
+              disabled={isAdding}
             >
-              加入購物車
+              {isAdding ? '加入中…' : '加入購物車'}
             </button>
 
             <p

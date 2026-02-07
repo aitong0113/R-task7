@@ -10,6 +10,7 @@ export default function Products() {
   const [products, setProducts] = useState([]);
   const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState({ current_page: 1, total_pages: 1 });
+  const [adding, setAdding] = useState({}); // 逐品項加入購物車的 loading 狀態
 
   const slicePage = (list, p) => {
     const totalPages = Math.max(1, Math.ceil(list.length / PER_PAGE));
@@ -106,9 +107,20 @@ export default function Products() {
                 
                 <button
                   className="btn btn-outline-primary w-100"
-                  onClick={() => addToCart(product.id, 1).then(() => alert('已加入購物車'))}
+                  onClick={async () => {
+                    try {
+                      setAdding(prev => ({ ...prev, [product.id]: true }));
+                      await addToCart(product.id, 1);
+                      alert('已加入購物車');
+                    } catch (err) {
+                      alert(err?.response?.data?.message || '加入購物車失敗');
+                    } finally {
+                      setAdding(prev => ({ ...prev, [product.id]: false }));
+                    }
+                  }}
+                  disabled={!!adding[product.id]}
                 >
-                  加入購物車
+                  {adding[product.id] ? '加入中…' : '加入購物車'}
                 </button>
 
                 <Link

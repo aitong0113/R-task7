@@ -11,7 +11,7 @@ export default function AdminProducts() {
       try {
         setIsLoading(true);
         const res = await getAdminProducts();
-        setProducts(res.data.products);
+        setProducts(res.products);
       } catch (err) {
         alert(err?.response?.data?.message || '取得商品失敗');
       } finally {
@@ -23,25 +23,20 @@ export default function AdminProducts() {
   }, []);
 
   // 🔹 刪除商品
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     const ok = window.confirm('確定要刪除這個商品嗎？');
     if (!ok) return;
 
-    deleteAdminProduct(id)
-      .then(() => {
-        // 刪完後重新抓一次列表
-        setIsLoading(true);
-        return getAdminProducts();
-      })
-      .then((res) => {
-        setProducts(res.data.products);
-      })
-      .catch((err) => {
-        alert(err?.response?.data?.message || '刪除失敗');
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+    try {
+      await deleteAdminProduct(id);
+      setIsLoading(true);
+      const res = await getAdminProducts();
+      setProducts(res.products);
+    } catch (err) {
+      alert(err?.response?.data?.message || '刪除失敗');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   if (isLoading) {
