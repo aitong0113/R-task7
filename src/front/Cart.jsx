@@ -9,7 +9,8 @@
     const navigate = useNavigate();
     const [cart, setCart] = useState({ carts: [] });
     const [isClearing, setIsClearing] = useState(false);
-    const [itemLoading, setItemLoading] = useState({}); // 每個 cart item 的 loading 狀態
+    const [itemUpdating, setItemUpdating] = useState({});
+    const [itemDeleting, setItemDeleting] = useState({});
 
     const getCart = async () => {
       try {
@@ -26,25 +27,25 @@
 
     const updateQty = async (cartItem, qty) => {
       try {
-        setItemLoading((prev) => ({ ...prev, [cartItem.id]: true }));
+        setItemUpdating((prev) => ({ ...prev, [cartItem.id]: true }));
         await updateCartItem(cartItem.id, cartItem.product.id, qty);
         await getCart();
       } catch (err) {
         alert(err?.response?.data?.message || '更新數量失敗');
       } finally {
-        setItemLoading((prev) => ({ ...prev, [cartItem.id]: false }));
+        setItemUpdating((prev) => ({ ...prev, [cartItem.id]: false }));
       }
     };
 
     const removeItem = async (cartId) => {
       try {
-        setItemLoading((prev) => ({ ...prev, [cartId]: true }));
+        setItemDeleting((prev) => ({ ...prev, [cartId]: true }));
         await removeCartItem(cartId);
         await getCart();
       } catch (err) {
         alert(err?.response?.data?.message || '移除商品失敗');
       } finally {
-        setItemLoading((prev) => ({ ...prev, [cartId]: false }));
+        setItemDeleting((prev) => ({ ...prev, [cartId]: false }));
       }
     };
 
@@ -111,7 +112,7 @@
                         <button
                           className="btn btn-sm btn-outline-secondary"
                           onClick={() => updateQty(item, item.qty - 1)}
-                          disabled={item.qty === 1 || !!itemLoading[item.id] || isClearing}
+                          disabled={item.qty === 1 || !!itemUpdating[item.id] || !!itemDeleting[item.id] || isClearing}
                         >
                           −
                         </button>
@@ -123,7 +124,7 @@
                         <button
                           className="btn btn-sm btn-outline-secondary"
                           onClick={() => updateQty(item, item.qty + 1)}
-                          disabled={!!itemLoading[item.id] || isClearing}
+                          disabled={!!itemUpdating[item.id] || !!itemDeleting[item.id] || isClearing}
                         >
                           +
                         </button>
@@ -136,9 +137,9 @@
                       <button
                         className="btn btn-sm btn-outline-danger"
                         onClick={() => removeItem(item.id)}
-                        disabled={!!itemLoading[item.id] || isClearing}
+                        disabled={!!itemDeleting[item.id] || !!itemUpdating[item.id] || isClearing}
                       >
-                        {itemLoading[item.id] ? '刪除中…' : '刪除'}
+                        {itemDeleting[item.id] ? '刪除中…' : '刪除'}
                       </button>
                     </td>
                   </tr>
