@@ -3,6 +3,6 @@ import react from '@vitejs/plugin-react'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base:'/R-task6/',
+  base:'/R-task7/',
   plugins: [react()],
 })
