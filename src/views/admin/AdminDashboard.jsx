@@ -21,14 +21,15 @@ export default function AdminDashboard() {
     httpAdmin.get(`/api/${API_PATH}/admin/orders`)
       .then(res => {
         const orders = res.data.orders || [];
-        // 假設「未付款」為待處理訂單
         const pending = orders.filter(order => !order.is_paid).length;
         setPendingOrderCount(pending);
       })
       .catch(() => setPendingOrderCount(0));
 
-    // 系統狀態（這裡簡單寫死為正常運行，可根據需求調整）
-    setStatus('正常運行');
+    // 系統狀態
+    setTimeout(() => {
+      setStatus('正常運行');
+    }, 0);
   }, []);
 
   return (
