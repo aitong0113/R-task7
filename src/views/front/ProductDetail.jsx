@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { getProduct, addToCart } from '../services/api';
+import { Link,useParams } from 'react-router-dom';
+
+import { addToCart,getProduct } from '@/services/api';
 
 export default function ProductDetail() {
   const { id } = useParams();

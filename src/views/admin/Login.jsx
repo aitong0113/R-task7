@@ -1,6 +1,9 @@
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+
+import { setAdminToken } from '@/services/auth';
+import { httpAdmin } from '@/services/http';
+
 import './login.scss';
 
 const API_BASE = import.meta.env.VITE_API_BASE;
@@ -11,25 +14,18 @@ export default function Login() {
 
   const onSubmit = async (data) => {
     try {
-
-      const res = await axios.post(`${API_BASE}/admin/signin`, {
-        username: data.email,      // ✅ 關鍵：一定是 username
+      const res = await httpAdmin.post(`${API_BASE}/admin/signin`, {
+        username: data.username,
         password: data.password,
       });
 
       const { token, expired } = res.data;
-      const expireDate = new Date(expired * 1000);
-
-      const setAuthCookie = (token, expireDate) => {
-        document.cookie = `hexToken=${token}; expires=${expireDate.toUTCString()}; path=/`;
-      };
-
-      setAuthCookie(token, expireDate);
+      setAdminToken(token, expired);
 
       navigate('/admin/products');
     } catch (err) {
-      console.error('❌ 登入錯誤完整資訊', err.response);
-      alert(err.response?.data?.message || '登入失敗');
+      console.error('登入錯誤', err.response);
+      alert(err.response?.data?.message || JSON.stringify(err.response?.data) || '登入失敗');
     }
   };
 
@@ -39,22 +35,18 @@ export default function Login() {
         <h1 className="login-title">後台登入</h1>
 
         <div className="form-group">
-          <label htmlFor="loginEmail">Email</label>
+          <label>Username</label>
           <input
-            id="loginEmail"
-            type="email"
-            autoComplete="email"
-            placeholder="請輸入管理員信箱"
-            {...register('email', { required: true })}
+            type="text"
+            placeholder="請輸入管理員帳號"
+            {...register('username', { required: true })}
           />
         </div>
 
         <div className="form-group">
-          <label htmlFor="loginPassword">Password</label>
+          <label>Password</label>
           <input
-            id="loginPassword"
             type="password"
-            autoComplete="current-password"
             placeholder="請輸入密碼"
             {...register('password', { required: true })}
           />

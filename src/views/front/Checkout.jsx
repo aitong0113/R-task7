@@ -1,8 +1,9 @@
-import { useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom';
-import { submitOrder } from '../services/api';
-import { Oval } from 'react-loader-spinner';
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { Oval } from 'react-loader-spinner';
+import { Link, useNavigate } from 'react-router-dom';
+
+import { submitOrder } from '@/services/api';
 
 export default function Checkout() {
   const navigate = useNavigate();

@@ -1,18 +1,20 @@
 //  路由表
-import Layout from '../Layout';
-import Home from '../front/Home';
-import Products from '../front/Products';
-import ProductDetail from '../front/ProductDetail';
-import Cart from '../front/Cart';
-import Checkout from '../front/Checkout';
-import NotFound from '../front/NotFound';
-import OrderSuccess from '../front/OrderSuccess';
+// Layout
+import FrontendLayout from "@/layout/FrontendLayout";
+import Cart from "@/views/front/Cart";
+import Checkout from "@/views/front/Checkout";
+// pages
+import Home from "@/views/front/Home";
+import NotFound from "@/views/front/NotFound";
+import OrderSuccess from "@/views/front/OrderSuccess";
+import ProductDetail from "@/views/front/ProductDetail";
+import Products from "@/views/front/Products";
 
   // 前台
 const routes = [
   {
     path: '/',
-    element: <Layout />,
+    element: <FrontendLayout />,
     errorElement: <NotFound />,
     children: [
       {

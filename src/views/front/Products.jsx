@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { getProducts, addToCart } from '../services/api';
-import Pagination from '../components/Pagination';
+
+import Pagination from '@/components/Pagination';
+import { addToCart,getProducts } from '@/services/api';
 
 
 export default function Products() {
